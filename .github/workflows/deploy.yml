@@ -1,10 +1,15 @@
 name: Deploy Deno
+
 on:
   push:
     branches:
       - main
+
 jobs:
   deploy:
+    permissions:
+      id-token: write # required
+      contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -13,4 +18,5 @@ jobs:
         with:
           deno-version: v2.x
 
-      - run: deno deploy
+      - name: Deploy Deno
+        run: deno deploy --org slinkydeveloper
