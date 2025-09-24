@@ -26,4 +26,4 @@ jobs:
           entrypoint: main.ts
 
       - name: Output
-        run: echo "Output ${{join(steps.deploy.outputs.*, '\n')}}"
+        run: echo '${{ toJson(steps.deploy.outputs) }}'
