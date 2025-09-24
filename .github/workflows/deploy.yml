@@ -18,5 +18,12 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Deploy Deno
-        run: deno deploy --org slinkydeveloper
+      - name: Deploy to Deno Deploy
+        uses: denoland/deployctl@v1
+        id: deploy
+        with:
+          project: francescogu-examples-he-63
+          entrypoint: main.ts
+
+      - name: Output
+        run: echo "Output ${{join(steps.deploy.outputs.*, '\n')}}"
