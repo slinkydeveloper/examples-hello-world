@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+env:
+  # Update this with the correct project name
+  DENO_PROJECT_NAME: francescogu-examples-he-63
+
 jobs:
   deploy:
     permissions:
@@ -22,7 +26,7 @@ jobs:
         uses: denoland/deployctl@v1
         id: deploy
         with:
-          project: francescogu-examples-he-63
+          project: ${{ env.DENO_PROJECT_NAME }}
           entrypoint: main.ts
 
       - name: Register Restate deployment
@@ -30,5 +34,8 @@ jobs:
           # In your Restate Cloud dashboard, go to Developers > API Keys > Create API Key, and make sure to select **Admin** for role
           RESTATE_ADMIN_URL: ${{ secrets.RESTATE_ADMIN_URL }}
           # You can find this out in Developers > Invoke. For example: `https://some-environment-private-id.env.us.restate.cloud:9070`
-          RESTATE_AUTH_TOKEN: ${{ secrets.RESTATE_AUTH_TOKEN }}
-        run: npx -y @restatedev/restate deployment register -y ${{ steps.deploy.outputs.url }}
+          RESTATE_AUTH_TOKEN: ${{ secrets.RESTATE_AUTH_TOKEN }}        
+        run: |
+          npx -y @restatedev/restate deployment register -y \
+            # Revision URL https://docs.deno.com/deploy/classic/deployments/#production-vs.-preview-deployments
+            https://${{ env.DENO_PROJECT_NAME }}-${{ steps.deploy.outputs.deployment-id }}.deno.dev
