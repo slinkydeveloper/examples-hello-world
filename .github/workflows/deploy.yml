@@ -36,6 +36,5 @@ jobs:
           # You can find this out in Developers > Invoke. For example: `https://some-environment-private-id.env.us.restate.cloud:9070`
           RESTATE_AUTH_TOKEN: ${{ secrets.RESTATE_AUTH_TOKEN }}        
         run: |
-          npx -y @restatedev/restate deployment register -y \
-            # Revision URL https://docs.deno.com/deploy/classic/deployments/#production-vs.-preview-deployments
-            https://${{ env.DENO_PROJECT_NAME }}-${{ steps.deploy.outputs.deployment-id }}.deno.dev
+          # Revision URL https://docs.deno.com/deploy/classic/deployments/#production-vs.-preview-deployments
+          npx -y @restatedev/restate deployment register -y https://${{ env.DENO_PROJECT_NAME }}-${{ steps.deploy.outputs.deployment-id }}.deno.dev
