@@ -1,5 +1,39 @@
-import { serveFile } from "jsr:@std/http/file-server";
+import * as restate from "npm:@restatedev/restate-sdk/fetch";
+import { serde } from "npm:@restatedev/restate-sdk-zod";
+import { sendNotification, sendReminder } from "./utils.ts";
 
-Deno.serve((req: Request) => {
-    return serveFile(req, "./index.html");
+import { z } from "npm:zod";
+
+const Greeting = z.object({
+  name: z.string(),
 });
+
+const GreetingResponse = z.object({
+  result: z.string(),
+});
+
+export const greeter = restate.service({
+  name: "Greeter",
+  handlers: {
+    greet: restate.createServiceHandler(
+      { input: serde.zod(Greeting), output: serde.zod(GreetingResponse) },
+      async (ctx: restate.Context, { name }) => {
+        // Durably execute a set of steps; resilient against failures
+        const greetingId = ctx.rand.uuidv4();
+        await ctx.run("Notification", () => sendNotification(greetingId, name));
+        await ctx.sleep({ seconds: 1 });
+        await ctx.run("Reminder", () => sendReminder(greetingId, name));
+
+        // Respond to caller
+        return { result: `You said hi to ${name}!` };
+      },
+    ),
+  },
+});
+
+const handler = restate.createEndpointHandler({
+  services: [greeter],
+  bidirectional: true,
+});
+
+Deno.serve({ port: 9080 }, handler);
