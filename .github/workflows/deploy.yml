@@ -22,7 +22,7 @@ jobs:
         uses: denoland/deployctl@v1
         id: deploy
         with:
-          project: francescogu-examples-he-63
+          project: some-other-project
           entrypoint: main.ts
 
       - name: Output
